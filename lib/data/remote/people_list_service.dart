@@ -17,6 +17,7 @@ class PeopleListService {
 
     dynamic totlalPage =
         HiveStorage.singleton?.getFromBox(StorageKeys.TOTAL_PAGES_KEY);
+
     if (totlalPage == null || totlalPage >= page) {
       final response = await dio
           .get(BASE_URL + 'popular?api_key=$API_KEY&language=en-US&page=$page');
@@ -30,6 +31,10 @@ class PeopleListService {
         var persons = List<PeopleModel>.from(
             (responseDecoded["results"] as List)
                 .map((e) => PeopleModel.fromJson((e)))).toList();
+
+        //save data in locale
+        savePeoplesLocale(persons);
+
         return persons;
       }
       return [];
@@ -37,28 +42,6 @@ class PeopleListService {
       return [];
     }
   }
-/*
-  Future<PersonalDetailsModel> fetchPersonalDetails(int id) async {
-    var response = await http.get(Uri.parse(
-        'https://api.themoviedb.org/3/person/$id?api_key=c949a0e09b06fbc87cacfbef4c504963&language=en-US'));
-    if (response.statusCode == 200) {
-      var person = personalDetailsModelFromJson(response.body);
-      print("movie${person.name}");
-      return personalDetailsModelFromJson(response.body);
-    } else {
-      throw Exception('FAILED TO LOAD THE MOVIE');
-    }
-  }
 
-  Future<ImagesModel> fetchImages(int id) async {
-    var response = await http.get(Uri.parse(
-        'https://api.themoviedb.org/3/person/$id/images?api_key=c949a0e09b06fbc87cacfbef4c504963'));
-    if (response.statusCode == 200) {
-      var person = imagesModelFromJson(response.body);
-      print("movie${person.id}");
-      return imagesModelFromJson(response.body);
-    } else {
-      throw Exception('FAILED TO LOAD THE MOVIE');
-    }
-  }*/
+  void savePeoplesLocale(List<PeopleModel> persons) async {}
 }

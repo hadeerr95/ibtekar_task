@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:floor/floor.dart';
+
 import 'known_for.dart';
 
 PeopleModel personFromJson(String str) =>
@@ -7,6 +9,7 @@ PeopleModel personFromJson(String str) =>
 
 String personToJson(PeopleModel data) => json.encode(data.toJson());
 
+@entity
 class PeopleModel {
   PeopleModel({
     required this.adult,

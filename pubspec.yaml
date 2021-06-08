@@ -27,6 +27,7 @@ dependencies:
   dio:
   hive:
   path_provider:
+  floor:
 
 
   # The following adds the Cupertino Icons font to your application.
