@@ -1,19 +1,43 @@
+import 'dart:convert';
+
+import 'package:dio/dio.dart';
+import 'package:ibtekar_task/constants/constant.dart';
+import 'package:ibtekar_task/models/people_model.dart';
+import 'package:ibtekar_task/storage/hive_storage_helper.dart';
+import 'package:ibtekar_task/storage/storage_keys.dart';
+
 class PeopleListService {
-  Future<List<Result>> fetchPersons({int page = 1}) async {
-    final response = await http.get(Uri.parse(
-        'popular?api_key=c949a0e09b06fbc87cacfbef4c504963&language=en-US&page=${page}'));
-    if (response.statusCode == 200) {
-      var per = List<Result>.from(
-          (json.decode(response.body)["results"] as List)
-              .map((e) => Result.fromJson((e)))).toList();
-      print(per[1].gender);
-      return List<Result>.from((json.decode(response.body)["results"] as List)
-          .map((e) => Result.fromJson((e)))).toList();
-    } else {
-      throw Exception('FAILED TO LOAD Movies');
-    }
+  var dio;
+  PeopleListService() {
+    dio = Dio();
   }
 
+  Future<List<PeopleModel>> fetchPersons({int page = 1}) async {
+    print("actual page sent for api is $page");
+
+    dynamic totlalPage =
+        HiveStorage.singleton?.getFromBox(StorageKeys.TOTAL_PAGES_KEY);
+    if (totlalPage == null || totlalPage >= page) {
+      final response = await dio
+          .get(BASE_URL + 'popular?api_key=$API_KEY&language=en-US&page=$page');
+      final responseDecoded = json.decode(response.toString());
+
+      if (totlalPage == 0) {
+        HiveStorage.singleton?.putInBox(
+            StorageKeys.TOTAL_PAGES_KEY, responseDecoded["total_pages"]);
+      }
+      if (response.statusCode == 200) {
+        var persons = List<PeopleModel>.from(
+            (responseDecoded["results"] as List)
+                .map((e) => PeopleModel.fromJson((e)))).toList();
+        return persons;
+      }
+      return [];
+    } else {
+      return [];
+    }
+  }
+/*
   Future<PersonalDetailsModel> fetchPersonalDetails(int id) async {
     var response = await http.get(Uri.parse(
         'https://api.themoviedb.org/3/person/$id?api_key=c949a0e09b06fbc87cacfbef4c504963&language=en-US'));
@@ -36,5 +60,5 @@ class PeopleListService {
     } else {
       throw Exception('FAILED TO LOAD THE MOVIE');
     }
-  }
+  }*/
 }

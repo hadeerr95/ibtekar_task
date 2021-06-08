@@ -25,6 +25,8 @@ dependencies:
     sdk: flutter
   flutter_bloc:
   dio:
+  hive:
+  path_provider:
 
 
   # The following adds the Cupertino Icons font to your application.
